@@ -1,28 +1,48 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
 
-class App extends Component {
-  render() {
+import CreateTransaction from './components/CreateTransaction'
+import TransactionList from './components/TransactionList'
+import { useFetch } from './hooks'
+import { getCategories, getTransactions } from './communication'
+
+export default function App() {
+    const [categoriesError, categoriesLoading, categories, updateCategories] = useFetch(getCategories)
+    const [transactionsError, transactionsLoading, transactions, updateTransactions] = useFetch(getTransactions)
+
+    const error = categoriesError || transactionsError
+    const loading = categoriesLoading || transactionsLoading
+
+    const handleCreatedCategory = (newCategory) => {
+        if (!categories) {
+            return console.error('Categories should not be null')
+        }
+
+        updateCategories([...categories, newCategory])
+    }
+
+    const handleCreatedTransaction = (newTransaction) => {
+        if (!transactions) {
+            return console.error('Categories should not be null')
+        }
+
+        updateTransactions([...transactions, newTransaction])
+    }
+
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
-  }
-}
+        <div>
+            {error && <p>Oops</p>}
+            {!error && loading && <p>Loading</p>}
 
-export default App;
+            {!error && !loading && transactions && categories && (
+                <>
+                    <CreateTransaction
+                        categories={categories}
+                        onCreatedCategory={handleCreatedCategory}
+                        onCreatedTransaction={handleCreatedTransaction}
+                    />
+                    <TransactionList transactions={transactions} categories={categories} />
+                </>
+            )}
+        </div>
+    )
+}
