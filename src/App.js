@@ -30,8 +30,9 @@ export default function App() {
 
     return (
         <div>
-            {error && <p>Oops</p>}
-            {!error && loading && <p>Loading</p>}
+            {error && <p className="error">Uh oh! An error occurred loading transactions.</p>}
+
+            {!error && loading && <p className="center">Loading...</p>}
 
             {!error && !loading && transactions && categories && (
                 <>

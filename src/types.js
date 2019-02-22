@@ -5,7 +5,7 @@ export type Category = {
 
 export type Transaction = {
     id: number,
-    amount: number,
+    amount: string,
     date: string,
     description: string,
     category_id: number,

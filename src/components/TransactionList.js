@@ -19,11 +19,11 @@ export default function TransactionList({ transactions, categories }: Props) {
 
     return (
         <div>
-            {transactions.length === 0 && <i>No transactions yet...</i>}
+            {transactions.length === 0 && <p className="center"><i>No transactions yet...</i></p>}
 
             {transactions.map(transaction => {
-                const category = indexedCategories.hasOwnProperty(transaction.id)
-                    ? indexedCategories[transaction.id]
+                const category = indexedCategories.hasOwnProperty(transaction.category_id)
+                    ? indexedCategories[transaction.category_id]
                     : null
 
                 return <Transaction key={transaction.id} transaction={transaction} category={category} />

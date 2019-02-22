@@ -6,6 +6,8 @@ import { createCategory, createTransaction } from '../communication'
 
 import type { Category, Transaction } from '../types'
 
+import styles from './CreateTransaction.module.scss'
+
 type Props = {
     categories: Category[],
     onCreatedCategory: (newCategory: Category) => void,
@@ -27,6 +29,7 @@ export default function CreateTransaction({ categories, onCreatedCategory, onCre
     }, [categories])
 
     const handleTextChange = setter => e => {
+        setError(null)
         setter(e.currentTarget.value)
     }
 
@@ -57,29 +60,60 @@ export default function CreateTransaction({ categories, onCreatedCategory, onCre
     }
 
     const handleCreate = async () => {
-        const newTransaction = await createTransaction(amount, description, category ? category.id : null)
+        setError(null)
 
-        onCreatedTransaction(newTransaction)
+        try {
+            const newTransaction = await createTransaction(amount, description, category ? category.id : null)
+
+            onCreatedTransaction(newTransaction)
+
+            setDescription('')
+            setAmount('0.00')
+            setCategory(null)
+        } catch (error) {
+            setError(error)
+        }
     }
 
     return (
-        <div>
-            {error && <p>Uh oh!</p>}
+        <div className={styles.wrap}>
+            {error && <p className="error">Uh oh! An error occurred when creating the transaction.</p>}
 
-            <input type="text" placeholder="Description" value={description} onChange={handleTextChange(setDescription)} />
-            <input type="number" min="0.01" step="0.01" placeholder="Amount" value={amount} onChange={handleTextChange(setAmount)} />
-            <Select
-                value={category}
-                isClearable
-                isLoading={creatingCategory}
-                onInputChange={handleCategoryInputChange}
-                onChange={handleCategoryChange}
-                onCreateOption={handleCategoryCreate}
-                options={sortedCategories || categories}
-                getOptionLabel={option => option.name || option.label}
-                getOptionValue={option => option.id} />
+            <div className={styles.row}>
+                <input
+                    className={styles.description}
+                    type="text"
+                    placeholder="Description..."
+                    value={description}
+                    onChange={handleTextChange(setDescription)}
+                />
 
-            <button onClick={handleCreate}>Create</button>
+                <input
+                    className={styles.amount}
+                    type="number"
+                    min="0.01"
+                    step="0.01"
+                    placeholder="Amount..."
+                    value={amount}
+                    onChange={handleTextChange(setAmount)}
+                />
+
+                <Select
+                    placeholder="Category..."
+                    className={styles.categorySelect}
+                    value={category}
+                    isClearable
+                    isLoading={creatingCategory}
+                    onInputChange={handleCategoryInputChange}
+                    onChange={handleCategoryChange}
+                    onCreateOption={handleCategoryCreate}
+                    options={sortedCategories || categories}
+                    getOptionLabel={option => option.name || option.label}
+                    getOptionValue={option => option.id}
+                />
+
+                <button onClick={handleCreate}>Create</button>
+            </div>
         </div>
     )
 }

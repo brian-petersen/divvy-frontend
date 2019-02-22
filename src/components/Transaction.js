@@ -44,7 +44,11 @@ export default function Transaction({ transaction, category }: Props) {
                 <div className={styles.category}>{category ? category.name : <i>No category</i>}</div>
             </div>
 
-            <div className={styles.category}>{amount}</div>
+            <div className={styles.amount}>{formatCurrency(amount)}</div>
         </div>
     )
+}
+
+function formatCurrency(amount: string) {
+    return `$${parseFloat(amount).toFixed(2)}`
 }
